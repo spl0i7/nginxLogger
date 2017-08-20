@@ -16,7 +16,7 @@ def get_object(log_list):
         'request_type': log_list[2],
         'path': log_list[3],
         'status_code': log_list[4],
-        'bytes_sent': log_list[5],
+        'bytes_sent': int(log_list[5]),
         'referer': log_list[6],
         'user_agent': log_list[7]
     }
@@ -24,12 +24,19 @@ def get_object(log_list):
 
 def parse_access_log(seek_position, file_name):
     new_seek_pos = 0
+    err_count = 0
     logs_objects = []
     with open(file_name) as f:
         f.seek(seek_position)
         lines = f.readlines()
         new_seek_pos = f.tell()
     for line in lines:
-        r = regex.search(line)
-        logs_objects.append(get_object(r.groups()))
+        try:
+            r = regex.search(line)
+            logs_objects.append(get_object(r.groups()))
+        except AttributeError:
+            err_count += 0
+    if err_count > 0:
+        print('Warning : Failed to insert {} records because regex did not match'.format(err_count))
+
     return new_seek_pos, logs_objects
