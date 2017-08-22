@@ -9,7 +9,7 @@ def insert_record(objects):
 
 
 def insert_position(position):
-    db.file_position.update({}, {'$set': {'position': position}})
+    db.file_position.update({}, {'$set': {'position': position}}, upsert=True)
 
 
 def get_position():
