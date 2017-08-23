@@ -5,7 +5,8 @@ db = connection.nginxLogger
 
 
 def insert_record(objects):
-    db.access_logs.insert(objects, w=0)
+    if len(objects) > 0:
+        db.access_logs.insert(objects, w=0)
 
 
 def insert_position(position):

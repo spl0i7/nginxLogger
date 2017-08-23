@@ -10,21 +10,21 @@ from datetime import datetime
 
 
 def get_object(line):
-    regex = re.compile("(?P<ip_address>\S*)\s-\s(?P<requesting_user>\S*)\s\[(?P<timestamp>.*?)\]\s\"(?P<method>\S*)\s*(?P<request>\S*)\s*(HTTP\/)*(?P<http_version>.*?)\"\s(?P<response_code>\d{3})\s(?P<size>\S*)\s\"(?P<referrer>[^\"]*)\"\s\"(?P<client>[^\"]*)")
+    regex = re.compile(
+        "(?P<remote_ip>\S*)\s-\s(?P<requesting_user>\S*)\s\[(?P<timestamp>.*?)\]\s\"(?P<method>\S*)\s*(?P<request>\S*)\s*(HTTP\/)*(?P<http_version>.*?)\"\s(?P<response_code>\d{3})\s(?P<size>\S*)\s\"(?P<referrer>[^\"]*)\"\s\"(?P<client>[^\"]*)")
     r = regex.search(line)
-    result_set = {}
-    regex_group = r.groups()
-
-    result_set['remote_ip'] = regex_group[0]
-    result_set['requesting_user'] = regex_group[1]
-    result_set['timestamp'] = datetime.strptime(regex_group[2], '%d/%b/%Y:%H:%M:%S %z')
-    result_set['method'] = regex_group[3]
-    result_set['request'] = regex_group[4]
-    result_set['http_version'] = regex_group[6]
-    result_set['response_code'] = regex_group[7]
-    result_set['size'] = int(regex_group[8])
-    result_set['referrer'] = regex_group[9]
-    result_set['client'] = regex_group[10]
+    result_set = {
+        'remote_ip': r.group('remote_ip'),
+        'requesting_user': r.group('remote_ip'),
+        'timestamp': datetime.strptime(r.group('timestamp'), '%d/%b/%Y:%H:%M:%S %z'),
+        'method': r.group('method'),
+        'request': r.group('request'),
+        'http_version': r.group('http_version'),
+        'response_code': r.group('response_code'),
+        'size': int(r.group('size')),
+        'referrer': r.group('referrer'),
+        'client': r.group('client')
+    }
 
     return result_set
 
@@ -40,7 +40,7 @@ def parse_access_log(seek_position, file_name):
     for line in lines:
         try:
             logs_objects.append(get_object(line))
-        except AttributeError:
+        except AttributeError:  # regex failed
             err_count += 0
     if err_count > 0:
         print('Warning : Failed to insert {} records because regex did not match'.format(err_count))
