@@ -2,3 +2,5 @@ pymongo
 pygobject
 pyinotify
 tornado
+ua_parser
+maxminddb-geolite2
