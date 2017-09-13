@@ -14,15 +14,23 @@ reader = geolite2.reader()
 
 
 def parse_ip(ip):
+
     ip_dict = reader.get(ip)
+
     parsed_ip = dict()
     parsed_ip['ip'] = ip
+    
+    if ip_dict is None:
+        return parsed_ip
+
     parsed_ip['continent'] = ip_dict.get('continent', None).get('names', None).get('en', None)
     parsed_ip['country'] = ip_dict.get('country', None).get('names', None).get('en', None)
+    parsed_ip['country_code'] = ip_dict.get('country', None).get('iso_code', None)
     parsed_ip['location'] = {
         'latitude': ip_dict.get('location', None).get('latitude', None),
         'longitude': ip_dict.get('location', None).get('longitude', None),
     }
+
     return parsed_ip
 
 

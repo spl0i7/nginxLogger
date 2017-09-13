@@ -12,9 +12,9 @@ class EventHandler(pyinotify.ProcessEvent):
         self.file_path = file_path
         # goto end of previously saved file position
         self._last_position = position
-        self.__process_logs()
+        self.process_logs()
 
-    def __process_logs(self):
+    def process_logs(self):
         #compare position to one stored in db
         if self._last_position > os.path.getsize(self.file_path):
             #file was changed
@@ -27,7 +27,7 @@ class EventHandler(pyinotify.ProcessEvent):
         insert_position(self._last_position)
 
     def process_IN_MODIFY(self, event):
-        self.__process_logs()
+        self.process_logs()
 
 
 def runner(log_path):
