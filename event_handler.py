@@ -1,9 +1,10 @@
 import pyinotify
 import os
 import argparse
+import getpass
 
 from log_parser import parse_access_log
-from db_manager import insert_record, insert_position, get_position
+from db_manager import insert_position, get_position, insert_user
 
 
 class EventHandler(pyinotify.ProcessEvent):
@@ -21,9 +22,8 @@ class EventHandler(pyinotify.ProcessEvent):
             self._last_position = 0
             insert_position(0)
 
-        (self._last_position, logs) = parse_access_log(
+        self._last_position = parse_access_log(
             self._last_position, self.file_path)
-        insert_record(logs)
         insert_position(self._last_position)
 
     def process_IN_MODIFY(self, event):
@@ -41,6 +41,17 @@ def runner(log_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Moniter Nginx Log files")
     parser.add_argument('--file', help="Nginx access log path", required=True)
+    parser.add_argument('--createuser', help="New username for web login", type=str)
     args = parser.parse_args()
+    if args.createuser:
+        password = getpass.getpass('New password > ')
+        confirm_pass = getpass.getpass('Confirm Password > ')
+
+        assert password is not None and confirm_pass is not None
+        assert password == confirm_pass
+        insert_user(args.createuser, password)
+        print("\x1b[2J\x1b[H") # clear screen
+
+
     print('Starting nginxLogger')
     runner(log_path=args.file)

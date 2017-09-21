@@ -4,3 +4,4 @@ pyinotify
 tornado
 ua_parser
 maxminddb-geolite2
+py-bcrypt

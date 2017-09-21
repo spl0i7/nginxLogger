@@ -2,7 +2,8 @@ import re
 from datetime import datetime
 from ua_parser import user_agent_parser
 from geolite2 import geolite2
-
+from db_manager import insert_record
+from pprint import pprint # debugging
 
 # regex expects $remote_addr - - [$time_local] "$request" $status $bytes_sent
 #   "$http_referer" "$http_user_agent"
@@ -19,7 +20,7 @@ def parse_ip(ip):
 
     parsed_ip = dict()
     parsed_ip['ip'] = ip
-    
+
     if ip_dict is None:
         return parsed_ip
 
@@ -57,16 +58,15 @@ def get_object(line):
 def parse_access_log(seek_position, file_name):
     new_seek_pos = 0
     err_count = 0
-    logs_objects = []
     with open(file_name) as f:
         f.seek(seek_position)
         lines = f.readlines()
         new_seek_pos = f.tell()
     for line in lines:
         try:
-            logs_objects.append(get_object(line))
+            insert_record(get_object(line))
         except AttributeError:  # regex failed
             err_count += 0
     if err_count > 0:
         print('Warning : Failed to insert {} records because regex did not match'.format(err_count))
-    return new_seek_pos, logs_objects
+    return new_seek_pos

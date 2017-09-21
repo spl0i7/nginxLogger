@@ -1,13 +1,18 @@
 from pymongo import MongoClient
+import bcrypt
 
 connection = MongoClient()
 db = connection.nginxLogger
 
 
-def insert_record(objects):
+def insert_user(username, password):
+    if username is not None and password is not None:
+        secret = bcrypt.hashpw(password, bcrypt.gensalt(10))
+        db.user.insert({'username': username, 'secret': secret}, w=0)
 
-    if len(objects) > 0:
-        db.access_logs.insert(objects)
+def insert_record(record):
+    if len(record) > 0 or record is not None:
+        db.access_logs.insert(record, w=0)
 
 
 def insert_position(position):
