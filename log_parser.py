@@ -35,7 +35,7 @@ def parse_ip(ip):
     return parsed_ip
 
 
-def get_object(line):
+def get_document(line):
     regex = re.compile(
         "(?P<remote_ip>\S*)\s-\s(?P<requesting_user>\S*)\s\[(?P<timestamp>.*?)\]\s\"(?P<method>\S*)\s*(?P<request>\S*)\s*(HTTP\/)*(?P<http_version>.*?)\"\s(?P<response_code>\d{3})\s(?P<size>\S*)\s\"(?P<referrer>[^\"]*)\"\s\"(?P<client>[^\"]*)")
     r = regex.search(line)
@@ -64,7 +64,7 @@ def parse_access_log(seek_position, file_name):
         new_seek_pos = f.tell()
     for line in lines:
         try:
-            insert_record(get_object(line))
+            insert_record(get_document(line))
         except AttributeError:  # regex failed
             err_count += 0
     if err_count > 0:

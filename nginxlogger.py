@@ -22,8 +22,7 @@ class EventHandler(pyinotify.ProcessEvent):
             self._last_position = 0
             insert_position(0)
 
-        self._last_position = parse_access_log(
-            self._last_position, self.file_path)
+        self._last_position = parse_access_log(self._last_position, self.file_path)
         insert_position(self._last_position)
 
     def process_IN_MODIFY(self, event):
@@ -49,9 +48,11 @@ if __name__ == "__main__":
 
         assert password is not None and confirm_pass is not None
         assert password == confirm_pass
+
         insert_user(args.createuser, password)
-        print("\x1b[2J\x1b[H") # clear screen
+        print('New user : {} added'.format(args.createuser))
 
-
-    print('Starting nginxLogger')
-    runner(log_path=args.file)
+    else:
+        print("\x1b[2J\x1b[H")  # clear screen
+        print('Starting nginxLogger')
+        runner(log_path=args.file)
